@@ -5,13 +5,18 @@ from tweepy import OAuthHandler
 import wget
 import urllib.request
 import traceback
+from moviepy.editor import *
 import os
 import subprocess
+from pydub import AudioSegment
 
 consumer_key = ""
 consumer_secret = ""
 access_token = ""
 access_token_secret = ""
+
+
+
 
 @classmethod
 def parse(cls, api, raw):
@@ -34,7 +39,7 @@ screen_name = "_subFN"
 mentions = api.mentions_timeline(count=1)
 
 replies = open(r'C:\Users\sub\Desktop\musica\files\data\replied-to.txt', 'r')
-
+print('test')
 file = open(r'C:\Users\sub\Desktop\musica\files\data\replied-to.txt', 'r+')
 b = file.readlines()
 b = str(b)
@@ -59,14 +64,16 @@ def detectMusic():
         replytomessage = "This song is: " + title + " by " + artist + "."
         for mention in mentions:
             api.update_status(status = replytomessage, in_reply_to_status_id = mention.id, auto_populate_reply_metadata=True)
+            return
         
     except:
         for mention in mentions:
-            api.update_status(status = "The song could not be recognized.", in_reply_to_status_id = mention.id, auto_populate_reply_metadata=True)
+            api.update_status(status = "The song could not be recognized.", in_reply_to_status_id = mention.id, auto_populate_reply_metadata=True)   
         traceback.print_exc()
+        return
 
 
-def detectMention():
+def main():
     for mention in mentions:
         if (str(b) != mention.in_reply_to_status_id_str):
             if (text.lower() in mention.text.lower()):
@@ -86,7 +93,7 @@ def detectMention():
                                 h.write(line)
                     h = open(r'C:\Users\sub\Desktop\musica\files\data\replied-to.txt', 'r+')
                     h.write(api.in_reply_to_status_id_str)
-
+                
             else:
                 return
 
@@ -101,8 +108,10 @@ def downloadVideo():
 
 
     try:
-        os.remove(r'C:\Users\sub\Desktop\musica\files\video\file.mp4')
-        os.remove(r'C:\Users\sub\Desktop\musica\files\audio\file.mp3')
+        if os.path.exists(r'C:\Users\sub\Desktop\musica\files\video\file.mp4'):
+            os.remove(r'C:\Users\sub\Desktop\musica\files\video\file.mp4')
+        if os.path.exists(r'C:\Users\sub\Desktop\musica\files\audio\file.mp3'):
+            os.remove(r'C:\Users\sub\Desktop\musica\files\audio\file.mp3')
         urllib.request.urlretrieve(media, r'C:\Users\sub\Desktop\musica\files\video\file.mp4')
         convertToAudio()
 
@@ -112,13 +121,18 @@ def downloadVideo():
 def convertToAudio():
 
     try:
-        subprocess.call(['ffmpeg', '-i', r'C:\Users\sub\Desktop\musica\files\video\file.mp4', r'C:\Users\sub\Desktop\musica\files\audio\file.mp3'])
+        # video = VideoFileClip(os.path.join("path","to", r'C:\Users\sub\Desktop\musica\files\video\file.mp4'))
+        # video.audio.write_audiofile(os.path.join("path","to",r'C:\Users\sub\Desktop\musica\files\audio\file.mp3'))
+
+        # subprocess.call(['ffmpeg', '-i', r'C:\Users\sub\Desktop\musica\files\video\file.mp4', r'C:\Users\sub\Desktop\musica\files\audio\file.mp3'])
+
+        sound = AudioSegment.from_file(r'C:\Users\sub\Desktop\musica\files\video\file.mp4')
+        sound.export(r'C:\Users\sub\Desktop\musica\files\audio\file.mp3', format="mp3", bitrate="128k")
 
         detectMusic()
     except:
         traceback.print_exc()
 
 
-
-if __name__ == "__main__":
-    detectMention()
+if __name__=='__main__':
+    main()
