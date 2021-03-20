@@ -5,7 +5,8 @@ from tweepy import OAuthHandler
 import wget
 import urllib.request
 import traceback
-from moviepy.editor import *
+import os
+import subprocess
 
 consumer_key = ""
 consumer_secret = ""
@@ -100,6 +101,8 @@ def downloadVideo():
 
 
     try:
+        os.remove(r'C:\Users\sub\Desktop\musica\files\video\file.mp4')
+        os.remove(r'C:\Users\sub\Desktop\musica\files\audio\file.mp3')
         urllib.request.urlretrieve(media, r'C:\Users\sub\Desktop\musica\files\video\file.mp4')
         convertToAudio()
 
@@ -109,8 +112,8 @@ def downloadVideo():
 def convertToAudio():
 
     try:
-        video = VideoFileClip(os.path.join("path","to", r'C:\Users\sub\Desktop\musica\files\video\file.mp4'))
-        video.audio.write_audiofile(os.path.join("path","to",r'C:\Users\sub\Desktop\musica\files\audio\file.mp3'))
+        subprocess.call(['ffmpeg', '-i', r'C:\Users\sub\Desktop\musica\files\video\file.mp4', r'C:\Users\sub\Desktop\musica\files\audio\file.mp3'])
+
         detectMusic()
     except:
         traceback.print_exc()
