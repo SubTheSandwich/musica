@@ -8,13 +8,11 @@ import traceback
 from moviepy.editor import *
 import os
 import subprocess
-from pydub import AudioSegment
 
 consumer_key = ""
 consumer_secret = ""
 access_token = ""
 access_token_secret = ""
-
 
 
 
@@ -105,6 +103,7 @@ def downloadVideo():
         ide = mention.in_reply_to_status_id
         tweet = api.get_status(ide)
         media = tweet.extended_entities['media'][0]['video_info']['variants'][1]['url']
+        print(media)
 
 
     try:
@@ -112,9 +111,13 @@ def downloadVideo():
             os.remove(r'C:\Users\sub\Desktop\musica\files\video\file.mp4')
         if os.path.exists(r'C:\Users\sub\Desktop\musica\files\audio\file.mp3'):
             os.remove(r'C:\Users\sub\Desktop\musica\files\audio\file.mp3')
-        urllib.request.urlretrieve(media, r'C:\Users\sub\Desktop\musica\files\video\file.mp4')
-        convertToAudio()
+       #  urllib.request.urlretrieve(media, r'C:\Users\sub\Desktop\musica\files\video\file.mp4')
 
+
+        subprocess.call(['youtube-dl', media, '-o', r'C:\Users\sub\Desktop\musica\files\video\file.mp4'])
+        #subprocess.call(['ffmpeg', '-ss', '00:00:00.00', '-i', media, '-t', '00:00:10.00', 'c', 'file.mp4'])
+
+        convertToAudio()
     except:
         traceback.print_exc()
 
@@ -124,7 +127,7 @@ def convertToAudio():
         # video = VideoFileClip(os.path.join("path","to", r'C:\Users\sub\Desktop\musica\files\video\file.mp4'))
         # video.audio.write_audiofile(os.path.join("path","to",r'C:\Users\sub\Desktop\musica\files\audio\file.mp3'))
 
-        # subprocess.call(['ffmpeg', '-i', r'C:\Users\sub\Desktop\musica\files\video\file.mp4', r'C:\Users\sub\Desktop\musica\files\audio\file.mp3'])
+        #subprocess.call(['ffmpeg', '-i', r'C:\Users\sub\Desktop\musica\files\video\file.mp4', r'C:\Users\sub\Desktop\musica\files\audio\file.mp3'])
 
         sound = AudioSegment.from_file(r'C:\Users\sub\Desktop\musica\files\video\file.mp4')
         sound.export(r'C:\Users\sub\Desktop\musica\files\audio\file.mp3', format="mp3", bitrate="128k")
